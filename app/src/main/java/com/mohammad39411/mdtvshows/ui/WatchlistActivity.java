@@ -4,8 +4,10 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.databinding.DataBindingUtil;
 import androidx.lifecycle.ViewModelProvider;
 
+import android.content.Intent;
 import android.os.Bundle;
-import android.widget.Toast;
+import android.view.View;
+
 
 import com.mohammad39411.mdtvshows.R;
 import com.mohammad39411.mdtvshows.adapters.WatchlistAdapter;
@@ -49,8 +51,13 @@ public class WatchlistActivity extends AppCompatActivity implements WatchlistLis
                 .subscribe(tvShows -> {
                     binding.setIsLoading(false);
                     if (watchlist.size() > 0){
-
+                        watchlist.clear();
                     }
+                    watchlist.addAll(tvShows);
+                    watchlistAdapter = new WatchlistAdapter(watchlist , this);
+                    binding.wListRecyclerView.setAdapter(watchlistAdapter);
+                    binding.wListRecyclerView.setVisibility(View.VISIBLE);
+                    disposable.dispose();
                 }));
     }
 
@@ -62,11 +69,22 @@ public class WatchlistActivity extends AppCompatActivity implements WatchlistLis
 
     @Override
     public void onTvShowClicked(TVShow tvShow) {
-
+        Intent intent = new Intent(getApplicationContext() , TVShowDetailsActivity.class);
+        intent.putExtra("tvShow" , tvShow);
+        startActivity(intent);
     }
 
     @Override
     public void onRemoveShowFromList(TVShow tvShow, int position) {
-
+        CompositeDisposable compositeDisposableDelete = new CompositeDisposable();
+        compositeDisposableDelete.add(viewModel.removeTvShowFromWatchlist(tvShow)
+        .subscribeOn(Schedulers.computation())
+        .observeOn(AndroidSchedulers.mainThread())
+        .subscribe(()->{
+            watchlist.remove(position);
+            watchlistAdapter.notifyItemRemoved(position);
+            watchlistAdapter.notifyItemRangeChanged(position , watchlistAdapter.getItemCount());
+            compositeDisposableDelete.dispose();
+        }));
     }
 }

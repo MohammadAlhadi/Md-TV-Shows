@@ -39,13 +39,15 @@ import io.reactivex.schedulers.Schedulers;
 
 public class TVShowDetailsActivity extends AppCompatActivity {
 
-    // TODO: 11/26/2020 create bottom for website
+    // TODO: 12/15/2020 Location : SUDAN - MEDaNI
 
     private ActivityTVShowDetailsBinding binding;
     private TVShowDetailsViewModel viewModel;
     private BottomSheetDialog episodesSheetDialog;
     private LayoutEpisodesBottomSheetBinding layout_episodes_bottom_sheet_binding;
     private TVShow tvShow;
+
+    private Boolean isTvShowAvailableInWatchlist = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -61,7 +63,20 @@ public class TVShowDetailsActivity extends AppCompatActivity {
         binding.imageBack.setOnClickListener(view -> onBackPressed());
 
         tvShow = (TVShow) getIntent().getSerializableExtra("tvShow");
+        checkTvShowInWatchList();
         getShowDetails();
+    }
+
+    private void checkTvShowInWatchList(){
+        CompositeDisposable compositeDisposable = new CompositeDisposable();
+        compositeDisposable.add(viewModel.getTvShowFromWatchlist(String.valueOf(tvShow.getId()))
+        .subscribeOn(Schedulers.computation())
+        .observeOn(AndroidSchedulers.mainThread())
+        .subscribe(tvShow1 -> {
+            isTvShowAvailableInWatchlist = true;
+            binding.imgWatchList.setImageResource(R.drawable.ic_check);
+            compositeDisposable.dispose();
+        }));
     }
 
     private void getShowDetails() {
@@ -155,15 +170,32 @@ public class TVShowDetailsActivity extends AppCompatActivity {
                             }
                             episodesSheetDialog.show();
                         });
-                        binding.imgWatchList.setOnClickListener(view ->
-                                        new CompositeDisposable().add(viewModel.addToWatchList(tvShow)
+                        binding.imgWatchList.setOnClickListener(view -> {
+                            CompositeDisposable compositeDisposable = new CompositeDisposable();
+                            if (isTvShowAvailableInWatchlist){
+                                compositeDisposable.add(viewModel.removeFromWatchList(tvShow)
+                                .subscribeOn(Schedulers.computation())
+                                .observeOn(AndroidSchedulers.mainThread())
+                                .subscribe(() -> {
+                                    isTvShowAvailableInWatchlist = false;
+                                    binding.imgWatchList.setImageResource(R.drawable.ic_seen);
+                                    showMessage("Removed Form List");
+                                    compositeDisposable.dispose();
+                                }));
+                            }
+                            else
+                            {
+                                compositeDisposable.add(viewModel.addToWatchList(tvShow)
                                         .subscribeOn(Schedulers.io())
                                         .observeOn(AndroidSchedulers.mainThread())
                                         .subscribe(() -> {
                                             binding.imgWatchList.setImageResource(R.drawable.ic_check);
-                                            Toast.makeText(TVShowDetailsActivity.this, "add On Watch List", Toast.LENGTH_SHORT).show();
+                                            showMessage("add On Watch List");
+                                            compositeDisposable.dispose();
                                         })
-                                ));
+                                );
+                            }
+                        });
                         binding.imgWatchList.setVisibility(View.VISIBLE);
                         loadBasicTvShowDetails();
                     }
@@ -241,6 +273,10 @@ public class TVShowDetailsActivity extends AppCompatActivity {
         binding.textNetworkCountry.setVisibility(View.VISIBLE);
         binding.textStartedDate.setVisibility(View.VISIBLE);
         binding.textStatus.setVisibility(View.VISIBLE);
+    }
+
+    private  void showMessage(String message){
+        Toast.makeText(getApplicationContext(), message, Toast.LENGTH_SHORT).show();
     }
 
 
