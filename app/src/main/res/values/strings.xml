@@ -1,0 +1,10 @@
+<resources>
+    <string name="app_name">MD TV Shows</string>
+    <string name="md_tv_shows_most_popular">MD TV Shows | Most Popular</string>
+    <string name="read_more">Read More</string>
+    <string name="read_less">Read less</string>
+    <string name="u2022">•</string>
+    <string name="website">Website</string>
+    <string name="episodes">Episodes</string>
+    <string name="watchlist">Watchlist</string>
+</resources>

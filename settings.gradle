@@ -1,0 +1,2 @@
+rootProject.name='Md TV Shows'
+include ':app'
