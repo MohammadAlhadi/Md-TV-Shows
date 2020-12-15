@@ -14,6 +14,7 @@ import com.mohammad39411.mdtvshows.adapters.WatchlistAdapter;
 import com.mohammad39411.mdtvshows.databinding.ActivityWatchlistBinding;
 import com.mohammad39411.mdtvshows.listeners.WatchlistListener;
 import com.mohammad39411.mdtvshows.model.TVShow;
+import com.mohammad39411.mdtvshows.utilities.TempDataHolder;
 import com.mohammad39411.mdtvshows.viewmodels.WaListVM;
 
 import java.util.ArrayList;
@@ -41,6 +42,7 @@ public class WatchlistActivity extends AppCompatActivity implements WatchlistLis
         viewModel = new ViewModelProvider(this).get(WaListVM.class);
         binding.imgClose.setOnClickListener(view -> onBackPressed());
         watchlist = new ArrayList<>();
+        loadWatchlist();
     }
 
     private void loadWatchlist() {
@@ -64,7 +66,12 @@ public class WatchlistActivity extends AppCompatActivity implements WatchlistLis
     @Override
     protected void onResume() {
         super.onResume();
-        loadWatchlist();
+
+        if (TempDataHolder.IS_WATCHLIST_UPDATED){
+            loadWatchlist();
+            TempDataHolder.IS_WATCHLIST_UPDATED = false;
+        }
+
     }
 
     @Override

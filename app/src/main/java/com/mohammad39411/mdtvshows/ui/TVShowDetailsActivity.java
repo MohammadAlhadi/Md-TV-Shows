@@ -29,6 +29,7 @@ import com.mohammad39411.mdtvshows.adapters.ImageSliderAdapter;
 import com.mohammad39411.mdtvshows.databinding.ActivityTVShowDetailsBinding;
 import com.mohammad39411.mdtvshows.databinding.LayoutEpisodesBottomSheetBinding;
 import com.mohammad39411.mdtvshows.model.TVShow;
+import com.mohammad39411.mdtvshows.utilities.TempDataHolder;
 import com.mohammad39411.mdtvshows.viewmodels.TVShowDetailsViewModel;
 
 import java.util.Locale;
@@ -189,6 +190,7 @@ public class TVShowDetailsActivity extends AppCompatActivity {
                                         .subscribeOn(Schedulers.io())
                                         .observeOn(AndroidSchedulers.mainThread())
                                         .subscribe(() -> {
+                                            TempDataHolder.IS_WATCHLIST_UPDATED = true ;
                                             binding.imgWatchList.setImageResource(R.drawable.ic_check);
                                             showMessage("add On Watch List");
                                             compositeDisposable.dispose();
