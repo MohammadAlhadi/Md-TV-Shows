@@ -7,5 +7,5 @@ public interface WatchlistListener {
     void onTvShowClicked(TVShow tvShow);
 
 
-    void onRemoveShowFromList(TVShow tvShow);
+    void onRemoveShowFromList(TVShow tvShow , int position);
 }

@@ -3,9 +3,12 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <data>
-<variable
-    name="tvShow"
-    type="com.mohammad39411.mdtvshows.model.TVShow" />
+
+        <variable
+         name="tvShow"
+         type="com.mohammad39411.mdtvshows.model.TVShow"/>
+
+
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
